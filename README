@@ -1,0 +1,4 @@
+
+IndexedHeap is C++ template heap container class. It can be used for objects
+which are expensive to copy but it is can be faster then the std::map.
+
