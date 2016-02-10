@@ -14,6 +14,16 @@ void check(bool x)
 		fail();
 }
 
+unsigned seed = 123456789;
+
+unsigned randi()
+{
+	const unsigned a = 1103515245;
+	const unsigned c = 12345;
+	seed = a * seed + c;
+	return seed;
+}
+
 class TestItem
 {
 public:
@@ -34,15 +44,35 @@ public:
 	}
 };
 
+void test01()
+{
+	IndexedHeap<TestItem, compareItems> ih;
+	ih.push(TestItem(4));
+	check(ih.front().getData() == 4);
+	ih.pop();
+}
+
+void test02()
+{
+	IndexedHeap<TestItem, compareItems> ih;
+	ih.push(TestItem(1));
+	ih.push(TestItem(3));
+	ih.push(TestItem(2));
+	check(ih.front().getData() == 3);
+	ih.pop();
+	check(ih.front().getData() == 2);
+	ih.pop();
+	check(ih.front().getData() == 1);
+	ih.pop();
+}
+
 int main(int argc, char *argv[])
 {
 	(void)argc;
 	(void)argv;
 
-	IndexedHeap<TestItem, compareItems> ih;
-	ih.push(TestItem(4));
-	check(ih.front().getData() == 4);
-	ih.pop();
+	test01();
+	test02();
 
 	printf("PASSED\n");
 	return 0;
