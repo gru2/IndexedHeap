@@ -1,6 +1,7 @@
 #include "IndexedHeap.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <set>
 
 void fail()
 {
@@ -33,9 +34,10 @@ public:
 	void setData(int x) { data = x; }
 protected:
 	int data;
+	int moreData[200];
 };
 
-class compareItems
+class CompareItems
 {
 public:
 	bool operator ()(const TestItem &lhs, const TestItem &rhs) const
@@ -47,7 +49,7 @@ public:
 
 void test01()
 {
-	IndexedHeap<TestItem, compareItems> ih;
+	IndexedHeap<TestItem, CompareItems> ih;
 	ih.push(TestItem(4));
 	check(ih.front().getData() == 4);
 	ih.pop();
@@ -55,7 +57,7 @@ void test01()
 
 void test02()
 {
-	IndexedHeap<TestItem, compareItems> ih;
+	IndexedHeap<TestItem, CompareItems> ih;
 	printf("(0) next is ih.push(TestItem(1))\n");
 	ih.push(TestItem(1));
 	ih.push(TestItem(6));
@@ -97,6 +99,43 @@ void test02()
 	ih.pop();
 }
 
+void test03()
+{
+	const int n = 1000;
+	IndexedHeap<TestItem, CompareItems> ih;
+	std::multiset<int,std::greater<int> > s;
+	for (int i = 0; i < n; i++)
+	{
+		int m = (int)randi();
+		if (ih.size() < 100)
+		{
+			ih.push(m);
+			s.insert(m);
+			continue;
+		}
+		if (ih.size() > 200)
+		{
+			ih.pop();
+			s.erase(s.begin());
+			continue;
+		}
+		if (m > 0)
+		{
+			ih.push(m);
+			s.insert(m);
+		}
+		else
+		{
+			int x = ih.front().getData();
+			int y = *(s.begin());
+			printf("(i=%d) x = %d  y = %d\n", i, x, y);
+			check(x == y);
+			ih.pop();
+			s.erase(s.begin());
+		}
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	(void)argc;
@@ -104,6 +143,7 @@ int main(int argc, char *argv[])
 
 	test01();
 	test02();
+	test03();
 
 	printf("PASSED\n");
 	return 0;
